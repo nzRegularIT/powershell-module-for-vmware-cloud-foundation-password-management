@@ -8548,12 +8548,15 @@ Function Test-VcfPasswordManagementPrereq {
         )
 
         foreach ($module in $modules ) {
-            if ((Get-InstalledModule -ErrorAction SilentlyContinue -Name $module.Name).Version -lt $module.MinimumVersion) {
+	# Get-InstalledModule or Get-Module logic below may not correctly handle modules with multiple versions installed
+            #if ((Get-InstalledModule -ErrorAction SilentlyContinue -Name $module.Name).Version -lt $module.MinimumVersion) {
+	    if ( ( Get-Module -Name $module.Name -ListAvailable ).Version -lt $module.MinimumVersion ) {
                 $message = "PowerShell Module: $($module.Name) $($module.MinimumVersion) minimum required version is not installed."
                 Show-PasswordManagementOutput -type ERROR -message $message
                 Break
             } else {
-                $moduleCurrentVersion = (Get-InstalledModule -Name $module.Name).Version
+                #$moduleCurrentVersion = (Get-InstalledModule -Name $module.Name).Version
+		$moduleCurrentVersion = ( Get-Module -Name $module.Name -ListAvailable ).Version
                 $message = "PowerShell Module: $($module.Name) $($moduleCurrentVersion) is installed and supports the minimum required version."
                 Show-PasswordManagementOutput -type INFO -message $message
             }
